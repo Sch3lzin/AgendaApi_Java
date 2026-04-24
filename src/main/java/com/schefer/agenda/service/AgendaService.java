@@ -1,6 +1,7 @@
 package com.schefer.agenda.service;
 
 import com.schefer.agenda.dto.AgendaDTO;
+import com.schefer.agenda.enums.TipoAgenda;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.repository.AgendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +15,31 @@ public class AgendaService {
     @Autowired
     private AgendaRepository repository;
 
-    private List<AgendaDTO> converteDados(List<Agenda> series) {
-        return series.stream()
-                .map(s -> new AgendaDTO(s.getId(), s.getTurma(), s.getTipoAula(), s.getTipoAgenda(), s.getTipoPeriodo(), s.getData(), s.getProfessor()))
+    private List<AgendaDTO> converteDados(List<Agenda> agendamentos) {
+        return agendamentos.stream()
+                .map(a -> new AgendaDTO(
+                        a.getId(),
+                        a.getTurma(),
+                        a.getMateria(),
+                        a.getTipoAula(),
+                        a.getTipoAgenda(),
+                        a.getTipoPeriodo(),
+                        a.getData(),
+                        a.getProfessor(),
+                        a.getObservacao()
+                ))
                 .collect(Collectors.toList());
     }
 
-    public List<AgendaDTO> exibirAgendaInfomatica() {
-        return converteDados(repository.exibirAgendaInformatica());
+    public List<AgendaDTO> exibirAgendaInformatica() {
+        return converteDados(repository.findByTipoAgenda(TipoAgenda.SALA_INFORMATICA));
     }
 
-
     public List<AgendaDTO> exibirAgendaAuditorio() {
-        return converteDados(repository.exibirAgendaAuditorio());
+        return converteDados(repository.findByTipoAgenda(TipoAgenda.AUDITORIO));
     }
 
     public List<AgendaDTO> exibirAgendaTablet() {
-        return converteDados(repository.exibirAgendaTablet());
+        return converteDados(repository.findByTipoAgenda(TipoAgenda.TABLET));
     }
 }

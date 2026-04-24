@@ -1,5 +1,6 @@
 package com.schefer.agenda.controller;
 
+import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.service.AgendamentoService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public Agenda criarAgendamento(@RequestBody Agenda agenda) {
-        return agendamentoService.salvarAgendamento(agenda);
+    public Agenda criarAgendamento(@RequestBody AgendamentoRequestDTO dto) {
+        return agendamentoService.salvarAgendamento(dto);
     }
 }

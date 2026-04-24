@@ -2,7 +2,7 @@ package com.schefer.agenda.model;
 
 import com.schefer.agenda.enums.TipoPeriodo;
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Turma {
@@ -18,6 +18,7 @@ public class Turma {
     private Integer serie;
 
     @Column(nullable = false)
+    @NotNull
     private Integer turma;
 
     public Turma() {}

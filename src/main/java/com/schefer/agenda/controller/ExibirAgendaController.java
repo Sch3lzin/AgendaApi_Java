@@ -17,8 +17,8 @@ public class ExibirAgendaController {
     private AgendaService agendaService;
 
     @GetMapping("/informatica")
-    public List<AgendaDTO> exibirAgendaInfomatica() {
-        return agendaService.exibirAgendaInfomatica();
+    public List<AgendaDTO> exibirAgendaInformatica() {
+        return agendaService.exibirAgendaInformatica();
     }
 
     @GetMapping("/auditorio")
