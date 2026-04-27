@@ -1,5 +1,6 @@
 package com.schefer.agenda.service;
 
+import com.schefer.agenda.dto.AgendaDTO;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.model.Materia;
@@ -10,25 +11,27 @@ import com.schefer.agenda.repository.MateriaRepository;
 import com.schefer.agenda.repository.ProfessorRepository;
 import com.schefer.agenda.repository.TurmaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AgendamentoService {
 
-    @Autowired
-    private AgendaRepository agendaRepository;
+    private final AgendaRepository agendaRepository;
+    private final TurmaRepository turmaRepository;
+    private final ProfessorRepository professorRepository;
+    private final MateriaRepository materiaRepository;
 
-    @Autowired
-    private TurmaRepository turmaRepository;
+    public AgendamentoService(AgendaRepository agendaRepository,
+                              TurmaRepository turmaRepository,
+                              ProfessorRepository professorRepository,
+                              MateriaRepository materiaRepository) {
+        this.agendaRepository = agendaRepository;
+        this.turmaRepository = turmaRepository;
+        this.professorRepository = professorRepository;
+        this.materiaRepository = materiaRepository;
+    }
 
-    @Autowired
-    private ProfessorRepository professorRepository;
-
-    @Autowired
-    private MateriaRepository materiaRepository;
-
-    public Agenda salvarAgendamento(AgendamentoRequestDTO dto) {
+    public AgendaDTO salvarAgendamento(AgendamentoRequestDTO dto) {
         Turma turma = turmaRepository.findById(dto.turmaId())
                 .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada: " + dto.turmaId()));
 
@@ -49,6 +52,18 @@ public class AgendamentoService {
                 dto.observacao()
         );
 
-        return agendaRepository.save(agenda);
+        Agenda salva = agendaRepository.save(agenda);
+
+        return new AgendaDTO(
+                salva.getId(),
+                salva.getTurma(),
+                salva.getMateria(),
+                salva.getTipoAula(),
+                salva.getTipoAgenda(),
+                salva.getTipoPeriodo(),
+                salva.getData(),
+                salva.getProfessor(),
+                salva.getObservacao()
+        );
     }
 }

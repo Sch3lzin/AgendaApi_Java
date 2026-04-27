@@ -1,12 +1,11 @@
 package com.schefer.agenda.controller;
 
+import com.schefer.agenda.dto.AgendaDTO;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
-import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.service.AgendamentoService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/agendamento")
@@ -19,7 +18,7 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public Agenda criarAgendamento(@RequestBody AgendamentoRequestDTO dto) {
-        return agendamentoService.salvarAgendamento(dto);
+    public ResponseEntity<AgendaDTO> criarAgendamento(@RequestBody AgendamentoRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoService.salvarAgendamento(dto));
     }
 }

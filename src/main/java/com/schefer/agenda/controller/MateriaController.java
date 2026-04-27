@@ -2,9 +2,9 @@ package com.schefer.agenda.controller;
 
 import com.schefer.agenda.dto.MateriaDTO;
 import com.schefer.agenda.dto.MateriaRequestDTO;
-import com.schefer.agenda.model.Materia;
-import com.schefer.agenda.repository.MateriaRepository;
 import com.schefer.agenda.service.MateriaService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +20,12 @@ public class MateriaController {
     }
 
     @GetMapping
-    public List<MateriaDTO> exibirMateria() {
-        return materiaService.exibirMateria();
+    public ResponseEntity<List<MateriaDTO>> exibirMateria() {
+        return ResponseEntity.ok(materiaService.exibirMateria());
     }
 
-    @PostMapping("/criar")
-    public Materia criarMateria(@RequestBody MateriaRequestDTO dto) {
-        return materiaService.salvarMateria(dto);
+    @PostMapping
+    public ResponseEntity<MateriaDTO> criarMateria(@RequestBody MateriaRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(materiaService.salvarMateria(dto));
     }
 }

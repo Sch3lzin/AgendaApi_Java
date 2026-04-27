@@ -2,8 +2,9 @@ package com.schefer.agenda.controller;
 
 import com.schefer.agenda.dto.TurmaDTO;
 import com.schefer.agenda.dto.TurmaRequestDTO;
-import com.schefer.agenda.model.Turma;
 import com.schefer.agenda.service.TurmaService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +20,12 @@ public class TurmaController {
     }
 
     @GetMapping
-    public List<TurmaDTO> exibirTurma() {
-        return turmaService.exibirTurma();
+    public ResponseEntity<List<TurmaDTO>> exibirTurma() {
+        return ResponseEntity.ok(turmaService.exibirTurma());
     }
 
-    @PostMapping("/criar")
-    public Turma criarTurma(@RequestBody TurmaRequestDTO dto) {
-        return turmaService.salvarTurma(dto);
+    @PostMapping
+    public ResponseEntity<TurmaDTO> criarTurma(@RequestBody TurmaRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(turmaService.salvarTurma(dto));
     }
 }

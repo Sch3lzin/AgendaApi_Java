@@ -4,16 +4,18 @@ import com.schefer.agenda.dto.AgendaDTO;
 import com.schefer.agenda.enums.TipoAgenda;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.repository.AgendaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AgendaService {
-    @Autowired
-    private AgendaRepository repository;
+
+    private final AgendaRepository repository;
+
+    public AgendaService(AgendaRepository repository) {
+        this.repository = repository;
+    }
 
     private List<AgendaDTO> converteDados(List<Agenda> agendamentos) {
         return agendamentos.stream()
@@ -28,7 +30,7 @@ public class AgendaService {
                         a.getProfessor(),
                         a.getObservacao()
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<AgendaDTO> exibirAgendaInformatica() {
