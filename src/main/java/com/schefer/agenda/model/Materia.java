@@ -23,7 +23,7 @@ public class Materia {
         return id;
     }
 
-    public String getName() {
+    public String getMateria() {
         return materia;
     }
 }
