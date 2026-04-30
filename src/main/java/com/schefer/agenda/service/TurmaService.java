@@ -12,9 +12,11 @@ import java.util.List;
 public class TurmaService {
 
     private final TurmaRepository repository;
+    private final VerificarDados verificarDados;
 
-    public TurmaService(TurmaRepository repository) {
+    public TurmaService(TurmaRepository repository, VerificarDados verificarDados) {
         this.repository = repository;
+        this.verificarDados = verificarDados;
     }
 
     private List<TurmaDTO> converteDados(List<Turma> turma) {
@@ -28,7 +30,9 @@ public class TurmaService {
     }
 
     public TurmaDTO salvarTurma(TurmaRequestDTO dto) {
-        Turma turma = new Turma(dto.periodo(), dto.serie(), dto.turma());
+        VerificarDados.DadosVerificarTurma dados = verificarDados.verificarExisteTurma(dto);
+
+        Turma turma = new Turma(dados.turma().getTipoPeriodo(), dados.turma().getSerie(), dados.turma().getTurma());
         Turma salva = repository.save(turma);
         return new TurmaDTO(salva.getId(), salva.getTipoPeriodo(), salva.getSerie(), salva.getTurma());
     }

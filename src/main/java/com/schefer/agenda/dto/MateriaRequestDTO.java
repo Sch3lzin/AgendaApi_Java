@@ -1,6 +1,8 @@
 package com.schefer.agenda.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
+// MateriaRequestDTO
 public record MateriaRequestDTO(
-        String materia
-) {
-}
+        @NotBlank String materia
+) {}

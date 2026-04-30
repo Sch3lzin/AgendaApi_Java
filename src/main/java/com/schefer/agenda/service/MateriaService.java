@@ -12,9 +12,11 @@ import java.util.List;
 public class MateriaService {
 
     private final MateriaRepository repository;
+    private final VerificarDados verificarDados;
 
-    public MateriaService(MateriaRepository repository) {
+    public MateriaService(MateriaRepository repository, VerificarDados verificarDados) {
         this.repository = repository;
+        this.verificarDados = verificarDados;
     }
 
     private List<MateriaDTO> converteDados(List<Materia> materia) {
@@ -28,7 +30,9 @@ public class MateriaService {
     }
 
     public MateriaDTO salvarMateria(MateriaRequestDTO dto) {
-        Materia materia = new Materia(dto.materia());
+        VerificarDados.DadosVerificarMateria dados = verificarDados.verificarMateria(dto);
+
+        Materia materia = new Materia(dados.materia().getMateria());
         Materia salva = repository.save(materia);
         return new MateriaDTO(salva.getId(), salva.getMateria());
     }
