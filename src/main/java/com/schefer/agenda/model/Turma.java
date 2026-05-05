@@ -29,6 +29,12 @@ public class Turma {
         this.turma = turma;
     }
 
+    public void atualizarDados(TipoPeriodo tipoPeriodo, Integer serie, Integer turma) {
+        this.tipoPeriodo = tipoPeriodo;
+        this.serie = serie;
+        this.turma = turma;
+    }
+
     public TipoPeriodo getTipoPeriodo() {
         return tipoPeriodo;
     }
@@ -44,4 +50,5 @@ public class Turma {
     public Integer getTurma() {
         return turma;
     }
+
 }

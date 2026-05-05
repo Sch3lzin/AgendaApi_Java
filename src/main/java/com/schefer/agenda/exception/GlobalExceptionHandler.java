@@ -13,14 +13,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Quando um ID não é encontrado no banco
+    /** Disparado quando um ID não é encontrado no banco (ex: turma, professor, matéria) */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("erro", ex.getMessage()));
     }
 
-    // Quando a validação do @Valid falha (@NotNull, @Min, etc.)
+    /** Disparado quando a validação do @Valid falha (@NotNull, @Min, @NotBlank, etc.) */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> erros = new HashMap<>();
@@ -29,17 +29,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erros);
     }
 
-    // Qualquer outra exception não tratada
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("erro", "Erro interno no servidor"));
-    }
-
-    // Quando há algum conflito no request e banco
+    /** Disparado quando há conflito de dados (ex: agendamento duplicado, turma já existente) */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("erro", ex.getMessage()));
+    }
+
+    /** Fallback para qualquer outra exceção não tratada explicitamente */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("erro", "Erro interno no servidor"));
     }
 }

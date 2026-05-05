@@ -2,8 +2,8 @@ package com.schefer.agenda.controller;
 
 import com.schefer.agenda.dto.AgendaDTO;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
+import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.service.AgendaService;
-import com.schefer.agenda.service.AgendamentoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +14,11 @@ import java.util.List;
 @RequestMapping("/agenda")
 public class AgendaController {
 
-    private final AgendamentoService agendamentoService;
     private final AgendaService agendaService;
 
-    public AgendaController(AgendamentoService agendamentoService, AgendaService agendaService) {
-        this.agendamentoService = agendamentoService;
+    public AgendaController(AgendaService agendaService) {
         this.agendaService = agendaService;
     }
-
-    // METODOS GET
 
     @GetMapping("/informatica")
     public ResponseEntity<List<AgendaDTO>> exibirAgendaInformatica() {
@@ -39,10 +35,20 @@ public class AgendaController {
         return ResponseEntity.ok(agendaService.exibirAgendaTablet());
     }
 
-    // METODOS POST
-
     @PostMapping
     public ResponseEntity<String> criarAgendamento(@RequestBody @Valid AgendamentoRequestDTO dto) {
-        return agendamentoService.salvarAgendamento(dto);
+        return agendaService.salvarAgendamento(dto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletarAgendamento(@PathVariable @Valid Long id) {
+        return agendaService.deletarAgendamento(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarAgendamento(@PathVariable @Valid Long id, @RequestBody @Valid AgendamentoRequestDTO dto) {
+        return agendaService.atualizarAgendamento(id, dto);
+    }
+
+    // TODO: implementar endpoint PUT para edição de agendamentos
 }

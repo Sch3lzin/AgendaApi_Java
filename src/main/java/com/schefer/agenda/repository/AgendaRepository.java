@@ -11,9 +11,7 @@ import java.util.List;
 
 public interface AgendaRepository extends JpaRepository<Agenda, Long> {
 
-    List<Agenda> findByTipoAgenda(TipoAgenda tipoAgenda);
-
-    boolean existsByDataAndTipoPeriodoAndTipoAula(LocalDate data, TipoPeriodo tipoPeriodo, TipoAula tipoAula);
-
     boolean existsByTipoAgendaAndDataAndTipoAula(TipoAgenda tipoAgenda, LocalDate data, TipoAula tipoAula);
+
+    List<Agenda> findByTipoAgendaAndDataGreaterThanEqual(TipoAgenda tipoAgenda, LocalDate data);
 }

@@ -20,17 +20,23 @@ public class TurmaController {
         this.turmaService = turmaService;
     }
 
-    // METODOS GET
-
     @GetMapping
     public ResponseEntity<List<TurmaDTO>> exibirTurma() {
         return ResponseEntity.ok(turmaService.exibirTurma());
     }
 
-    // METODOS POST
-
     @PostMapping
     public ResponseEntity<TurmaDTO> criarTurma(@RequestBody @Valid TurmaRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(turmaService.salvarTurma(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletarTurma(@PathVariable @Valid Long id) {
+        return turmaService.deletarTurma(id);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<String> atualizarTurma(@PathVariable @Valid Long id, @RequestBody TurmaRequestDTO dto) {
+        return turmaService.atualizarTurma(id, dto);
     }
 }

@@ -13,6 +13,10 @@ import com.schefer.agenda.repository.TurmaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Centraliza as validações de negócio reutilizadas pelos services,
+ * evitando duplicação de lógica de verificação entre eles.
+ */
 @Service
 public class VerificarDados {
 
@@ -31,10 +35,20 @@ public class VerificarDados {
         this.turmaRepository = turmaRepository;
     }
 
+    /** Agrupa as entidades resolvidas necessárias para criar um agendamento */
     public record DadosVerificarAgendamento(Turma turma, Professor professor, Materia materia) {}
+
+    /** Agrupa a turma validada para ser persistida */
     public record DadosVerificarTurma(Turma turma) {}
+
+    /** Agrupa a matéria validada para ser persistida */
     public record DadosVerificarMateria(Materia materia) {}
 
+    /**
+     * Valida um agendamento:
+     * - Resolve turma, professor e matéria pelo ID (lança EntityNotFoundException se algum não existir)
+     * - Garante que não há outro agendamento para o mesmo recurso, data e aula (lança IllegalStateException se houver)
+     */
     public DadosVerificarAgendamento verificarExisteAgendamento(AgendamentoRequestDTO dto) {
         Turma turma = turmaRepository.findById(dto.turmaId())
                 .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada: " + dto.turmaId()));
@@ -54,6 +68,10 @@ public class VerificarDados {
         return new DadosVerificarAgendamento(turma, professor, materia);
     }
 
+    /**
+     * Garante que não existe outra turma com a mesma combinação de série e turma
+     * antes de retornar a entidade pronta para persistência.
+     */
     public DadosVerificarTurma verificarExisteTurma(TurmaRequestDTO dto) {
         boolean jaExisteTurma = turmaRepository.existsBySerieAndTurma(dto.serie(), dto.turma());
 
@@ -65,6 +83,10 @@ public class VerificarDados {
         return new DadosVerificarTurma(turma);
     }
 
+    /**
+     * Garante que não existe outra matéria com o mesmo nome
+     * antes de retornar a entidade pronta para persistência.
+     */
     public DadosVerificarMateria verificarMateria(MateriaRequestDTO dto) {
         boolean jaExisteMateria = materiaRepository.existsByMateria(dto.materia());
 

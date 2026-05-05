@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-// AgendamentoRequestDTO
 public record AgendamentoRequestDTO(
         @NotNull Long turmaId,
         @NotNull Long materiaId,
@@ -18,5 +17,5 @@ public record AgendamentoRequestDTO(
         @NotNull TipoAgenda tipoAgenda,
         @NotNull TipoPeriodo tipoPeriodo,
         @NotNull @FutureOrPresent LocalDate data,
-        @Size(max = 255) String observacao  // opcional, sem @NotNull
+        @Size(max = 255) String observacao  // campo opcional — sem @NotNull intencionalmente
 ) {}

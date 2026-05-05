@@ -19,6 +19,10 @@ public class Materia {
         this.materia = materia;
     }
 
+    public void atualizarDados(String materia) {
+        this.materia = materia;
+    }
+
     public Long getId() {
         return id;
     }

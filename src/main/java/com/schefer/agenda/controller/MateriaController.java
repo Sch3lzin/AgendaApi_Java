@@ -20,17 +20,23 @@ public class MateriaController {
         this.materiaService = materiaService;
     }
 
-    // METODOS GET
-
     @GetMapping
     public ResponseEntity<List<MateriaDTO>> exibirMateria() {
         return ResponseEntity.ok(materiaService.exibirMateria());
     }
 
-    // METODOS POST
-
     @PostMapping
     public ResponseEntity<MateriaDTO> criarMateria(@RequestBody @Valid MateriaRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(materiaService.salvarMateria(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletarMateria(@PathVariable @Valid Long id) {
+        return materiaService.deletarMateria(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarMateria(@PathVariable @Valid Long id, @RequestBody MateriaRequestDTO dto) {
+        return materiaService.atualizarMateria(id, dto);
     }
 }

@@ -24,6 +24,10 @@ public class Professor {
         this.name = name;
     }
 
+    public void atualizarDados(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -35,4 +39,5 @@ public class Professor {
     public List<Agenda> getAgendamentos() {
         return agendamentos;
     }
+
 }

@@ -20,17 +20,23 @@ public class ProfessorController {
         this.professorService = professorService;
     }
 
-    // METODOS GET
-
     @GetMapping
     public ResponseEntity<List<ProfDTO>> exibirProfessores() {
         return ResponseEntity.ok(professorService.exibirProfessores());
     }
 
-    // METODOS POST
-
     @PostMapping
     public ResponseEntity<ProfDTO> criarProfessor(@RequestBody @Valid ProfRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(professorService.salvarProfessor(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletarProfessor(@PathVariable @Valid Long id) {
+        return professorService.deletarProfessor(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarProfessor(@PathVariable @Valid Long id, @RequestBody ProfRequestDTO dto) {
+        return professorService.atualizarProfessor(id, dto);
     }
 }

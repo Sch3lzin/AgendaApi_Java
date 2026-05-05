@@ -49,6 +49,17 @@ public class Agenda {
         this.observacao = observacao;
     }
 
+    public void atualizarDados(Turma turma, Materia materia, TipoAula tipoAula, TipoAgenda tipoAgenda, TipoPeriodo tipoPeriodo, LocalDate data, Professor professor, String observacao) {
+        this.turma = turma;
+        this.materia = materia;
+        this.tipoAula = tipoAula;
+        this.tipoAgenda = tipoAgenda;
+        this.tipoPeriodo = tipoPeriodo;
+        this.data = data;
+        this.professor = professor;
+        this.observacao = observacao;
+    }
+
     public Long getId() {
         return id;
     }
