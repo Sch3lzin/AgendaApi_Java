@@ -3,6 +3,7 @@ package com.schefer.agenda.service;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.dto.MateriaRequestDTO;
 import com.schefer.agenda.dto.TurmaRequestDTO;
+import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.model.Materia;
 import com.schefer.agenda.model.Professor;
 import com.schefer.agenda.model.Turma;
@@ -11,6 +12,7 @@ import com.schefer.agenda.repository.MateriaRepository;
 import com.schefer.agenda.repository.ProfessorRepository;
 import com.schefer.agenda.repository.TurmaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -121,5 +123,23 @@ public class VerificarDados {
 
         Materia materia = new Materia(dto.materia());
         return new DadosVerificarMateria(materia);
+    }
+
+    /**
+     * Verifica se o usuário logado tem permissão para modificar o agendamento.
+     * Só o criador, SECRETARIO ou ADMIN podem editar/deletar.
+     * Lança SemPermissaoException se não tiver permissão.
+     */
+    public void verificarPermissaoAgendamento(Agenda agenda) {
+        Long idUsuarioLogado = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String role = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().iterator().next().getAuthority();
+
+        boolean ehCriador = agenda.getProfessor().getId().equals(idUsuarioLogado);
+        boolean temPermissao = role.equals("ROLE_ADMIN") || role.equals("ROLE_SECRETARIO");
+
+        if (!ehCriador && !temPermissao) {
+            throw new IllegalStateException("Sem permissão para deletar esse agendamento");
+        }
     }
 }

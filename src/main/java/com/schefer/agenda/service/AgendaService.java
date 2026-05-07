@@ -86,9 +86,10 @@ public class AgendaService {
 
     /** Remove um agendamento pelo ID; lança exceção se não encontrado */
     public ResponseEntity<String> deletarAgendamento(@Valid Long id) {
-        if (!repository.existsById(id)) {
-            throw new IllegalStateException("Agendamento não encontrado");
-        }
+        Agenda agenda = repository.findById(id)
+                        .orElseThrow(() -> new IllegalStateException("Agendamento não encontrado"));
+
+        verificarDados.verificarPermissaoAgendamento(agenda);
 
         repository.deleteById(id);
 
@@ -106,6 +107,7 @@ public class AgendaService {
         Agenda agenda = repository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Agendamento não encontrado"));
 
+        verificarDados.verificarPermissaoAgendamento(agenda);
         VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamentoParaEdicao(dto, id);
 
         agenda.atualizarDados(
