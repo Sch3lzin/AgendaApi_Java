@@ -6,6 +6,7 @@ import com.schefer.agenda.model.Professor;
 import com.schefer.agenda.repository.ProfessorRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ProfessorService {
 
     private final ProfessorRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ProfessorService(ProfessorRepository repository) {
+    public ProfessorService(ProfessorRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /** Converte entidades Professor para o DTO de resposta */
@@ -31,9 +34,13 @@ public class ProfessorService {
         return converteDados(repository.findAll());
     }
 
-    /** Persiste um novo professor e retorna os dados salvos */
+    /**
+     * Persiste um novo professor com a senha encriptada via bcrypt.
+     * A senha nunca é salva em texto puro no banco.
+     */
     public ProfDTO salvarProfessor(ProfRequestDTO dto) {
-        Professor professor = new Professor(dto.name());
+        String senhaCriptografada = passwordEncoder.encode(dto.senha());
+        Professor professor = new Professor(dto.name(), senhaCriptografada, dto.permisao());
         Professor salvo = repository.save(professor);
         return new ProfDTO(salvo.getId(), salvo.getName());
     }
@@ -49,17 +56,14 @@ public class ProfessorService {
     }
 
     /**
-     *  Atualiza dados de um professor, usa id para acha-lo no banco;
-     *  Lança exceção se não encontrada;
-     *  Persiste dados após validar que não existe outro com o mesmo
-     *  nome no banco
+     * Atualiza dados básicos de um professor pelo ID.
+     * Lança exceção se não encontrado.
      */
     public ResponseEntity<String> atualizarProfessor(@Valid Long id, ProfRequestDTO dto) {
         Professor professor = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado!"));
+                .orElseThrow(() -> new IllegalStateException("Professor não encontrado"));
 
-        professor.atualizarDados(dto.name());
-
+        professor.atualizarDadosBasicos(dto.name());
         repository.save(professor);
 
         return ResponseEntity.ok("Professor atualizado com sucesso!");

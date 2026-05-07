@@ -69,6 +69,31 @@ public class VerificarDados {
     }
 
     /**
+     * Valida a atualização de um agendamento:
+     * - Resolve turma, professor e matéria pelo ID (lança EntityNotFoundException se algum não existir)
+     * - Garante que não há outro agendamento para o mesmo recurso, data e aula (lança IllegalStateException se houver)
+     */
+    public DadosVerificarAgendamento verificarExisteAgendamentoParaEdicao(AgendamentoRequestDTO dto, Long idAtual) {
+        Turma turma = turmaRepository.findById(dto.turmaId())
+                .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada: " + dto.turmaId()));
+
+        Professor professor = professorRepository.findById(dto.professorId())
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado: " + dto.professorId()));
+
+        Materia materia = materiaRepository.findById(dto.materiaId())
+                .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada: " + dto.materiaId()));
+
+        boolean jaExisteAgendamento = agendaRepository
+                .existsByTipoAgendaAndDataAndTipoAulaAndIdNot(dto.tipoAgenda(), dto.data(), dto.tipoAula(), idAtual);
+
+        if (jaExisteAgendamento) {
+            throw new IllegalStateException("Já existe um agendamento para esse recurso nessa data e aula.");
+        }
+
+        return new DadosVerificarAgendamento(turma, professor, materia);
+    }
+
+    /**
      * Garante que não existe outra turma com a mesma combinação de série e turma
      * antes de retornar a entidade pronta para persistência.
      */

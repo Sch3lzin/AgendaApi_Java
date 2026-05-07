@@ -101,13 +101,12 @@ public class AgendaService {
      *  Persiste dados após validar que não existe outro com os mesmos
      *  dados no banco
      */
-
     public ResponseEntity<String> atualizarAgendamento(@Valid Long id, @Valid AgendamentoRequestDTO dto) {
 
         Agenda agenda = repository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Agendamento não encontrado"));
 
-        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamento(dto);
+        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamentoParaEdicao(dto, id);
 
         agenda.atualizarDados(
                 dados.turma(),

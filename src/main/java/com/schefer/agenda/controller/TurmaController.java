@@ -35,7 +35,7 @@ public class TurmaController {
         return turmaService.deletarTurma(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> atualizarTurma(@PathVariable @Valid Long id, @RequestBody TurmaRequestDTO dto) {
         return turmaService.atualizarTurma(id, dto);
     }

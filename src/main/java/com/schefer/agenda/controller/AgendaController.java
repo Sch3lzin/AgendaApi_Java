@@ -49,6 +49,4 @@ public class AgendaController {
     public ResponseEntity<String> atualizarAgendamento(@PathVariable @Valid Long id, @RequestBody @Valid AgendamentoRequestDTO dto) {
         return agendaService.atualizarAgendamento(id, dto);
     }
-
-    // TODO: implementar endpoint PUT para edição de agendamentos
 }
