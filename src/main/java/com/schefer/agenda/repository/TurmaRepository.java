@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
     boolean existsBySerieAndTurma(@NotNull @Min(1) @Max(9) Integer serie, @NotNull @Min(1) @Max(10) Integer turma);
+
+    boolean existsBySerieAndTurmaAndIdNot(@NotNull @Min(1) @Max(9) Integer serie, @NotNull @Min(1) @Max(10) Integer turma, Long idAtual);
 }

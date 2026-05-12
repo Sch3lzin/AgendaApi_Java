@@ -70,7 +70,7 @@ public class TurmaService {
         Turma turma = repository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Turma não encontrada!"));
 
-        VerificarDados.DadosVerificarTurma dados = verificarDados.verificarExisteTurma(dto);
+        VerificarDados.DadosVerificarTurma dados = verificarDados.verificarExisteTurmaEdicao(dto, id);
 
         turma.atualizarDados(
                 dados.turma().getTipoPeriodo(),

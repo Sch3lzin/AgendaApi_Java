@@ -35,7 +35,7 @@ public class AgendaService {
                         a.getTipoAgenda(),
                         a.getTipoPeriodo(),
                         a.getData(),
-                        a.getProfessor(),
+                        a.getProfessor().exibirDados(),
                         a.getObservacao()
                 ))
                 .toList();

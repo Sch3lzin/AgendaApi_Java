@@ -1,6 +1,7 @@
 package com.schefer.agenda.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.schefer.agenda.dto.ProfResponseDTO;
 import com.schefer.agenda.enums.TipoUsuario;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,22 +44,39 @@ public class Professor implements UserDetails {
 
     // --- UserDetails ---
 
-    /** Retorna a role do usuário como authority do Spring Security */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + tipoUsuario.name()));
     }
 
-    /** Spring Security usa esse método pra validar a senha */
     @Override
     public String getPassword() {
         return senha;
     }
 
-    /** Spring Security usa esse método como identificador único do usuário */
     @Override
     public String getUsername() {
         return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     // --- Getters ---
@@ -77,5 +95,9 @@ public class Professor implements UserDetails {
 
     public List<Agenda> getAgendamentos() {
         return agendamentos;
+    }
+
+    public ProfResponseDTO exibirDados() {
+        return new ProfResponseDTO(getId(), getName());
     }
 }

@@ -111,11 +111,38 @@ public class VerificarDados {
     }
 
     /**
+     * Valida a atualização de uma turma:
+     * - Garante que não existe outra turma com a mesma combinação de série e turma
+     * antes de retornar a entidade pronta para persistência.
+     */
+    public DadosVerificarTurma verificarExisteTurmaEdicao(TurmaRequestDTO dto, Long idAtual) {
+        boolean jaExisteTurma = turmaRepository.existsBySerieAndTurmaAndIdNot(dto.serie(), dto.turma(), idAtual);
+
+        if (jaExisteTurma) {
+            throw new IllegalStateException("Ja existe uma turma com esses dados.");
+        }
+
+        Turma turma = new Turma(dto.periodo(), dto.serie(), dto.turma());
+        return new DadosVerificarTurma(turma);
+    }
+
+    /**
      * Garante que não existe outra matéria com o mesmo nome
      * antes de retornar a entidade pronta para persistência.
      */
     public DadosVerificarMateria verificarMateria(MateriaRequestDTO dto) {
         boolean jaExisteMateria = materiaRepository.existsByMateria(dto.materia());
+
+        if (jaExisteMateria) {
+            throw new IllegalStateException("Ja existe uma materia com esse nome");
+        }
+
+        Materia materia = new Materia(dto.materia());
+        return new DadosVerificarMateria(materia);
+    }
+
+    public DadosVerificarMateria verificarMateriaEdicao(MateriaRequestDTO dto, Long id) {
+        boolean jaExisteMateria = materiaRepository.existsByMateriaAndIdNot(dto.materia(), id);
 
         if (jaExisteMateria) {
             throw new IllegalStateException("Ja existe uma materia com esse nome");

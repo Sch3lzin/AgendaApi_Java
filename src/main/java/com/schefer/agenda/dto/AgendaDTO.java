@@ -16,6 +16,6 @@ public record AgendaDTO(Long id,
                         TipoAgenda tipoAgenda,
                         TipoPeriodo tipoPeriodo,
                         LocalDate data,
-                        Professor professor,
+                        ProfResponseDTO professor,
                         String observacao) {
 }

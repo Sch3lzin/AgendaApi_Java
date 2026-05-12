@@ -48,11 +48,11 @@ public class MateriaService {
     /** Remove uma matéria pelo ID; lança exceção se não encontrada */
     public ResponseEntity<String> deletarMateria(@Valid Long id) {
         if (!repository.existsById(id)) {
-            throw new IllegalStateException("Materia não encontrado");
+            throw new IllegalStateException("Materia não encontrada!");
         }
 
         repository.deleteById(id);
-        return ResponseEntity.ok("Materia deletado com sucesso");
+        return ResponseEntity.ok("Materia deletada com sucesso");
     }
 
     /**
@@ -65,12 +65,12 @@ public class MateriaService {
         Materia materia = repository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Materia não encontrada!"));
 
-        VerificarDados.DadosVerificarMateria dados = verificarDados.verificarMateria(dto);
+        VerificarDados.DadosVerificarMateria dados = verificarDados.verificarMateriaEdicao(dto, id);
 
         materia.atualizarDados(dados.materia().getMateria());
 
         repository.save(materia);
 
-        return ResponseEntity.ok("Materia atulizada com sucesso!");
+        return ResponseEntity.ok("Materia atualizada com sucesso!");
     }
 }

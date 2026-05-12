@@ -2,7 +2,6 @@ package com.schefer.agenda.controller;
 
 import com.schefer.agenda.dto.AgendaDTO;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
-import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.service.AgendaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

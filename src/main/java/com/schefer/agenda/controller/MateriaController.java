@@ -41,7 +41,7 @@ public class MateriaController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SECRETARIO')")
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarMateria(@PathVariable @Valid Long id, @RequestBody MateriaRequestDTO dto) {
+    public ResponseEntity<String> atualizarMateria(@PathVariable @Valid Long id, @RequestBody @Valid MateriaRequestDTO dto) {
         return materiaService.atualizarMateria(id, dto);
     }
 }
