@@ -39,10 +39,24 @@ public class ProfessorService {
     }
 
     /**
-     * Persiste um novo professor com a senha encriptada via bcrypt.
+     * Persiste um novo Admin/Secratario/professor com a senha encriptada via bcrypt.
+     * A senha nunca é salva em texto puro no banco.
+     */
+    public ProfDTO salvarProfessorAdmin(ProfRequestDTO dto) {
+        String senhaCriptografada = passwordEncoder.encode(dto.senha());
+        Professor professor = new Professor(dto.name(), senhaCriptografada, dto.permissao());
+        Professor salvo = repository.save(professor);
+        return new ProfDTO(salvo.getId(), salvo.getName());
+    }
+
+    /**
+     * Persiste um novo Secretario/Professor com a senha encriptada via bcrypt.
+     * Verifica se o usuário logado tem permissão para criar o tipo de usuário solicitado.
      * A senha nunca é salva em texto puro no banco.
      */
     public ProfDTO salvarProfessor(ProfRequestDTO dto) {
+        verificarDados.verificarPermissaoCriarProfessor(dto.permissao());
+
         String senhaCriptografada = passwordEncoder.encode(dto.senha());
         Professor professor = new Professor(dto.name(), senhaCriptografada, dto.permissao());
         Professor salvo = repository.save(professor);

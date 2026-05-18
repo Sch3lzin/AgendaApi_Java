@@ -27,6 +27,12 @@ public class ProfessorController {
         return ResponseEntity.ok(professorService.exibirProfessores());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping
+    public ResponseEntity<ProfDTO> criarProfessorAdmin(@RequestBody @Valid ProfRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(professorService.salvarProfessorAdmin(dto));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'SECRETARIO')")
     @PostMapping
     public ResponseEntity<ProfDTO> criarProfessor(@RequestBody @Valid ProfRequestDTO dto) {

@@ -3,6 +3,7 @@ package com.schefer.agenda.service;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.dto.MateriaRequestDTO;
 import com.schefer.agenda.dto.TurmaRequestDTO;
+import com.schefer.agenda.enums.TipoUsuario;
 import com.schefer.agenda.exception.SemPermissaoException;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.model.Materia;
@@ -193,5 +194,31 @@ public class VerificarDados {
         if (!ehOProprio) {
             throw new SemPermissaoException("Sem permissão para atualizar esse professor!");
         }
+    }
+
+    /**
+     * Verifica se o usuário logado tem permissão para criar novos usuários.
+     * - ADMIN pode criar qualquer permissão.
+     * - SECRETARIO pode criar SECRETARIO e PROFESSOR, mas não ADMIN.
+     * - PROFESSOR não pode criar ninguém.
+     * Lança SemPermissaoException se não tiver permissão.
+     */
+    public void verificarPermissaoCriarProfessor(TipoUsuario permissaoDoCriando) {
+        String role = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities()
+                .iterator().next().getAuthority();
+
+        if (role.equals("ROLE_ADMIN")) {
+            return;
+        }
+
+        if (role.equals("ROLE_SECRETARIO")) {
+            if (permissaoDoCriando == TipoUsuario.ADMIN) {
+                throw new SemPermissaoException("Secretário não pode criar um Admin!");
+            }
+            return;
+        }
+
+        throw new SemPermissaoException("Sem permissão para criar usuários!");
     }
 }

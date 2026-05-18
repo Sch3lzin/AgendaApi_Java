@@ -56,7 +56,7 @@ class ProfessorControllerTest {
                 }
                 """;
 
-        when(professorService.salvarProfessor(any()))
+        when(professorService.salvarProfessorAdmin(any()))
                 .thenReturn(new ProfDTO(1L, "teste"));
 
         // act
