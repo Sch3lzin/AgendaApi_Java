@@ -5,9 +5,11 @@ import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.enums.TipoAgenda;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.repository.AgendaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,8 +31,8 @@ public class AgendaService {
         return agendamentos.stream()
                 .map(a -> new AgendaDTO(
                         a.getId(),
-                        a.getTurma(),
-                        a.getMateria(),
+                        a.getTurma().exibirDados(),
+                        a.getMateria().exibirDados(),
                         a.getTipoAula(),
                         a.getTipoAgenda(),
                         a.getTipoPeriodo(),
@@ -66,7 +68,10 @@ public class AgendaService {
      * de recurso, data e aula no banco.'
      */
     public ResponseEntity<String> salvarAgendamento(AgendamentoRequestDTO dto) {
-        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamento(dto);
+        Long professorId = (Long) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamento(dto, professorId);
 
         Agenda agenda = new Agenda(
                 dados.turma(),
@@ -87,13 +92,13 @@ public class AgendaService {
     /** Remove um agendamento pelo ID; lança exceção se não encontrado */
     public ResponseEntity<String> deletarAgendamento(@Valid Long id) {
         Agenda agenda = repository.findById(id)
-                        .orElseThrow(() -> new IllegalStateException("Agendamento não encontrado"));
+                        .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado!"));
 
         verificarDados.verificarPermissaoAgendamento(agenda);
 
         repository.deleteById(id);
 
-        return ResponseEntity.ok("Agendamento deletado com sucesso");
+        return ResponseEntity.ok("Agendamento deletado com sucesso!");
     }
 
     /**
@@ -102,13 +107,16 @@ public class AgendaService {
      *  Persiste dados após validar que não existe outro com os mesmos
      *  dados no banco
      */
-    public ResponseEntity<String> atualizarAgendamento(@Valid Long id, @Valid AgendamentoRequestDTO dto) {
+    public ResponseEntity<String> atualizarAgendamento(@Valid Long idAtual, @Valid AgendamentoRequestDTO dto) {
 
-        Agenda agenda = repository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Agendamento não encontrado"));
+        Agenda agenda = repository.findById(idAtual)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado!"));
+
+        Long professorId = (Long) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
 
         verificarDados.verificarPermissaoAgendamento(agenda);
-        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamentoParaEdicao(dto, id);
+        VerificarDados.DadosVerificarAgendamento dados = verificarDados.verificarExisteAgendamentoParaEdicao(dto, idAtual, professorId);
 
         agenda.atualizarDados(
                 dados.turma(),

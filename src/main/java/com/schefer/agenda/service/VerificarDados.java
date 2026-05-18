@@ -3,6 +3,7 @@ package com.schefer.agenda.service;
 import com.schefer.agenda.dto.AgendamentoRequestDTO;
 import com.schefer.agenda.dto.MateriaRequestDTO;
 import com.schefer.agenda.dto.TurmaRequestDTO;
+import com.schefer.agenda.exception.SemPermissaoException;
 import com.schefer.agenda.model.Agenda;
 import com.schefer.agenda.model.Materia;
 import com.schefer.agenda.model.Professor;
@@ -51,12 +52,12 @@ public class VerificarDados {
      * - Resolve turma, professor e matéria pelo ID (lança EntityNotFoundException se algum não existir)
      * - Garante que não há outro agendamento para o mesmo recurso, data e aula (lança IllegalStateException se houver)
      */
-    public DadosVerificarAgendamento verificarExisteAgendamento(AgendamentoRequestDTO dto) {
+    public DadosVerificarAgendamento verificarExisteAgendamento(AgendamentoRequestDTO dto, Long id) {
         Turma turma = turmaRepository.findById(dto.turmaId())
                 .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada: " + dto.turmaId()));
 
-        Professor professor = professorRepository.findById(dto.professorId())
-                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado: " + dto.professorId()));
+        Professor professor = professorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado: " + id));
 
         Materia materia = materiaRepository.findById(dto.materiaId())
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada: " + dto.materiaId()));
@@ -64,7 +65,7 @@ public class VerificarDados {
         boolean jaExisteAgendamento = agendaRepository.existsByTipoAgendaAndDataAndTipoAula(dto.tipoAgenda(), dto.data(), dto.tipoAula());
 
         if (jaExisteAgendamento) {
-            throw new IllegalStateException("Já existe um agendamento para esse recurso nessa data e aula.");
+            throw new IllegalStateException("Já existe um agendamento para esse recurso nessa data e aula!");
         }
 
         return new DadosVerificarAgendamento(turma, professor, materia);
@@ -75,12 +76,12 @@ public class VerificarDados {
      * - Resolve turma, professor e matéria pelo ID (lança EntityNotFoundException se algum não existir)
      * - Garante que não há outro agendamento para o mesmo recurso, data e aula (lança IllegalStateException se houver)
      */
-    public DadosVerificarAgendamento verificarExisteAgendamentoParaEdicao(AgendamentoRequestDTO dto, Long idAtual) {
+    public DadosVerificarAgendamento verificarExisteAgendamentoParaEdicao(AgendamentoRequestDTO dto, Long idAtual, Long professorId) {
         Turma turma = turmaRepository.findById(dto.turmaId())
                 .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada: " + dto.turmaId()));
 
-        Professor professor = professorRepository.findById(dto.professorId())
-                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado: " + dto.professorId()));
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado: " + professorId));
 
         Materia materia = materiaRepository.findById(dto.materiaId())
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada: " + dto.materiaId()));
@@ -89,7 +90,7 @@ public class VerificarDados {
                 .existsByTipoAgendaAndDataAndTipoAulaAndIdNot(dto.tipoAgenda(), dto.data(), dto.tipoAula(), idAtual);
 
         if (jaExisteAgendamento) {
-            throw new IllegalStateException("Já existe um agendamento para esse recurso nessa data e aula.");
+            throw new IllegalStateException("Já existe um agendamento para esse recurso nessa data e aula!");
         }
 
         return new DadosVerificarAgendamento(turma, professor, materia);
@@ -103,7 +104,7 @@ public class VerificarDados {
         boolean jaExisteTurma = turmaRepository.existsBySerieAndTurma(dto.serie(), dto.turma());
 
         if (jaExisteTurma) {
-            throw new IllegalStateException("Ja existe uma turma com esses dados.");
+            throw new IllegalStateException("Ja existe uma turma com esses dados!");
         }
 
         Turma turma = new Turma(dto.periodo(), dto.serie(), dto.turma());
@@ -119,7 +120,7 @@ public class VerificarDados {
         boolean jaExisteTurma = turmaRepository.existsBySerieAndTurmaAndIdNot(dto.serie(), dto.turma(), idAtual);
 
         if (jaExisteTurma) {
-            throw new IllegalStateException("Ja existe uma turma com esses dados.");
+            throw new IllegalStateException("Ja existe uma turma com esses dados!");
         }
 
         Turma turma = new Turma(dto.periodo(), dto.serie(), dto.turma());
@@ -134,18 +135,23 @@ public class VerificarDados {
         boolean jaExisteMateria = materiaRepository.existsByMateria(dto.materia());
 
         if (jaExisteMateria) {
-            throw new IllegalStateException("Ja existe uma materia com esse nome");
+            throw new IllegalStateException("Ja existe uma materia com esse nome!");
         }
 
         Materia materia = new Materia(dto.materia());
         return new DadosVerificarMateria(materia);
     }
 
+    /**
+     * Valida a atualização de uma matéria:
+     * - Garante que não existe outra matéria com o mesmo nome, ignorando a própria
+     *   antes de retornar a entidade pronta para persistência.
+     */
     public DadosVerificarMateria verificarMateriaEdicao(MateriaRequestDTO dto, Long id) {
         boolean jaExisteMateria = materiaRepository.existsByMateriaAndIdNot(dto.materia(), id);
 
         if (jaExisteMateria) {
-            throw new IllegalStateException("Ja existe uma materia com esse nome");
+            throw new IllegalStateException("Ja existe uma materia com esse nome!");
         }
 
         Materia materia = new Materia(dto.materia());
@@ -166,7 +172,26 @@ public class VerificarDados {
         boolean temPermissao = role.equals("ROLE_ADMIN") || role.equals("ROLE_SECRETARIO");
 
         if (!ehCriador && !temPermissao) {
-            throw new IllegalStateException("Sem permissão para deletar esse agendamento");
+            throw new SemPermissaoException("Sem permissão nesse agendamento!");
+        }
+    }
+
+    /**
+     * Verifica se o usuário logado tem permissão para atualizar o professor.
+     * Lança IllegalStateException se não tiver permissão.
+     */
+    public void verificarPermissaoProfessor(Long id) {
+        Long idUsuarioLogado = (Long) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        String role = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities()
+                .iterator().next().getAuthority();
+
+        boolean ehOProprio = idUsuarioLogado.equals(id);
+
+        if (!ehOProprio) {
+            throw new SemPermissaoException("Sem permissão para atualizar esse professor!");
         }
     }
 }

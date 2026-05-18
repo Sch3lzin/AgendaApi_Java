@@ -1,6 +1,8 @@
 package com.schefer.agenda.model;
 
-import com.schefer.agenda.enums.*;
+import com.schefer.agenda.enums.TipoAgenda;
+import com.schefer.agenda.enums.TipoAula;
+import com.schefer.agenda.enums.TipoPeriodo;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

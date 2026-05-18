@@ -1,5 +1,6 @@
 package com.schefer.agenda.model;
 
+import com.schefer.agenda.dto.MateriaResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +18,10 @@ public class Materia {
 
     public Materia(String materia) {
         this.materia = materia;
+    }
+
+    public MateriaResponseDTO exibirDados() {
+        return new MateriaResponseDTO(getMateria());
     }
 
     public void atualizarDados(String materia) {

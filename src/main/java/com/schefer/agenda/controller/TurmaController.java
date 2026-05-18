@@ -40,7 +40,7 @@ public class TurmaController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SECRETARIO')")
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarTurma(@PathVariable @Valid Long id, @RequestBody TurmaRequestDTO dto) {
+    public ResponseEntity<String> atualizarTurma(@PathVariable @Valid Long id, @RequestBody @Valid TurmaRequestDTO dto) {
         return turmaService.atualizarTurma(id, dto);
     }
 }

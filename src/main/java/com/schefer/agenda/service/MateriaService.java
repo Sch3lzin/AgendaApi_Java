@@ -4,6 +4,7 @@ import com.schefer.agenda.dto.MateriaDTO;
 import com.schefer.agenda.dto.MateriaRequestDTO;
 import com.schefer.agenda.model.Materia;
 import com.schefer.agenda.repository.MateriaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,11 +49,11 @@ public class MateriaService {
     /** Remove uma matéria pelo ID; lança exceção se não encontrada */
     public ResponseEntity<String> deletarMateria(@Valid Long id) {
         if (!repository.existsById(id)) {
-            throw new IllegalStateException("Materia não encontrada!");
+            throw new EntityNotFoundException("Materia não encontrada!");
         }
 
         repository.deleteById(id);
-        return ResponseEntity.ok("Materia deletada com sucesso");
+        return ResponseEntity.ok("Materia deletada com sucesso!");
     }
 
     /**
@@ -63,7 +64,7 @@ public class MateriaService {
      */
     public ResponseEntity<String> atualizarMateria(@Valid Long id, MateriaRequestDTO dto) {
         Materia materia = repository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Materia não encontrada!"));
+                .orElseThrow(() -> new EntityNotFoundException("Materia não encontrada!"));
 
         VerificarDados.DadosVerificarMateria dados = verificarDados.verificarMateriaEdicao(dto, id);
 

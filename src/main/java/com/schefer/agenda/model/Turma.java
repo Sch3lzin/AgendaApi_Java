@@ -1,5 +1,6 @@
 package com.schefer.agenda.model;
 
+import com.schefer.agenda.dto.TurmaResponseDTO;
 import com.schefer.agenda.enums.TipoPeriodo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +34,10 @@ public class Turma {
         this.tipoPeriodo = tipoPeriodo;
         this.serie = serie;
         this.turma = turma;
+    }
+
+    public TurmaResponseDTO exibirDados() {
+        return new TurmaResponseDTO(getSerie(), getTurma());
     }
 
     public TipoPeriodo getTipoPeriodo() {

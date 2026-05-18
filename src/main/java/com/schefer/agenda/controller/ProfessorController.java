@@ -2,6 +2,7 @@ package com.schefer.agenda.controller;
 
 import com.schefer.agenda.dto.ProfDTO;
 import com.schefer.agenda.dto.ProfRequestDTO;
+import com.schefer.agenda.dto.ProfUpdateDTO;
 import com.schefer.agenda.service.ProfessorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,12 @@ public class ProfessorController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SECRETARIO')")
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarProfessor(@PathVariable @Valid Long id, @RequestBody ProfRequestDTO dto) {
+    public ResponseEntity<String> atualizarProfessor(@PathVariable @Valid Long id, @RequestBody @Valid ProfRequestDTO dto) {
         return professorService.atualizarProfessor(id, dto);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> atualizarNomeProfessor(@PathVariable @Valid Long id, @RequestBody @Valid ProfUpdateDTO dto) {
+        return professorService.atualizarNomeProfessor(id, dto);
     }
 }

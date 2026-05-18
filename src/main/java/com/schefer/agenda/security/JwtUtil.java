@@ -3,6 +3,7 @@ package com.schefer.agenda.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,7 +13,8 @@ import java.util.Date;
 public class JwtUtil {
 
     // Em produção, mova essa chave para uma variável de ambiente
-    private static final String SECRET = "sua-chave-secreta-muito-longa-e-segura-aqui-123!";
+    @Value("${api.security.token.secret}")
+    private String SECRET;
     private static final long EXPIRACAO_MS = 1000 * 60 * 60 * 8; // 8 horas
 
     private SecretKey getChave() {

@@ -2,8 +2,10 @@ package com.schefer.agenda.service;
 
 import com.schefer.agenda.dto.ProfDTO;
 import com.schefer.agenda.dto.ProfRequestDTO;
+import com.schefer.agenda.dto.ProfUpdateDTO;
 import com.schefer.agenda.model.Professor;
 import com.schefer.agenda.repository.ProfessorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,10 +18,12 @@ public class ProfessorService {
 
     private final ProfessorRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final VerificarDados verificarDados;
 
-    public ProfessorService(ProfessorRepository repository, PasswordEncoder passwordEncoder) {
+    public ProfessorService(ProfessorRepository repository, PasswordEncoder passwordEncoder, VerificarDados verificarDados) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.verificarDados = verificarDados;
     }
 
     /** Converte entidades Professor para o DTO de resposta */
@@ -40,7 +44,7 @@ public class ProfessorService {
      */
     public ProfDTO salvarProfessor(ProfRequestDTO dto) {
         String senhaCriptografada = passwordEncoder.encode(dto.senha());
-        Professor professor = new Professor(dto.name(), senhaCriptografada, dto.permisao());
+        Professor professor = new Professor(dto.name(), senhaCriptografada, dto.permissao());
         Professor salvo = repository.save(professor);
         return new ProfDTO(salvo.getId(), salvo.getName());
     }
@@ -48,11 +52,11 @@ public class ProfessorService {
     /** Remove um professor pelo ID; lança exceção se não encontrado */
     public ResponseEntity<String> deletarProfessor(@Valid Long id) {
         if (!repository.existsById(id)) {
-            throw new IllegalStateException("Professor não encontrado");
+            throw new EntityNotFoundException("Professor não encontrado!");
         }
 
         repository.deleteById(id);
-        return ResponseEntity.ok("Professor deletado com sucesso");
+        return ResponseEntity.ok("Professor deletado com sucesso!");
     }
 
     /**
@@ -61,7 +65,24 @@ public class ProfessorService {
      */
     public ResponseEntity<String> atualizarProfessor(@Valid Long id, ProfRequestDTO dto) {
         Professor professor = repository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Professor não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado!"));
+
+        String senhaCriptografada = passwordEncoder.encode(dto.senha());
+        professor.atualizarDados(dto.name(), senhaCriptografada, dto.permissao());
+        repository.save(professor);
+
+        return ResponseEntity.ok("Professor atualizado com sucesso!");
+    }
+
+    /**
+     * Atualiza dados gerais de um professor pelo id
+     * Lança exceção se não encontrado
+     */
+    public ResponseEntity<String> atualizarNomeProfessor(@Valid Long id, @Valid ProfUpdateDTO dto) {
+        Professor professor = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado!"));
+
+        verificarDados.verificarPermissaoProfessor(id);
 
         professor.atualizarDadosBasicos(dto.name());
         repository.save(professor);

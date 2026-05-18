@@ -3,6 +3,7 @@ package com.schefer.agenda.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +41,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredenciais(CredenciaisInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("erro", ex.getMessage()));
+    }
+
+    /** Disparado quando o JSON enviado é inválido */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleJsonInvalido(HttpMessageNotReadableException ex) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "erro", "JSON inválido ou mal formatado"
+                ));
+    }
+
+    /** Disparado quando o usuario não tem permissão necessaria */
+    @ExceptionHandler(SemPermissaoException.class)
+    public ResponseEntity<Map<String, String>> handleSemPermissao(SemPermissaoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Map.of("erro", ex.getMessage()));
     }
 

@@ -12,7 +12,6 @@ import java.time.LocalDate;
 public record AgendamentoRequestDTO(
         @NotNull Long turmaId,
         @NotNull Long materiaId,
-        @NotNull Long professorId,
         @NotNull TipoAula tipoAula,
         @NotNull TipoAgenda tipoAgenda,
         @NotNull TipoPeriodo tipoPeriodo,

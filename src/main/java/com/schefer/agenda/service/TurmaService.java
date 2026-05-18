@@ -4,6 +4,7 @@ import com.schefer.agenda.dto.TurmaDTO;
 import com.schefer.agenda.dto.TurmaRequestDTO;
 import com.schefer.agenda.model.Turma;
 import com.schefer.agenda.repository.TurmaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,11 +54,11 @@ public class TurmaService {
     /** Remove uma turma pelo ID; lança exceção se não encontrada */
     public ResponseEntity<String> deletarTurma(@Valid Long id) {
         if (!repository.existsById(id)) {
-            throw new IllegalStateException("Turma não encontrado");
+            throw new EntityNotFoundException("Turma não encontrada!");
         }
 
         repository.deleteById(id);
-        return ResponseEntity.ok("Turma deletado com sucesso");
+        return ResponseEntity.ok("Turma deletada com sucesso!");
     }
 
     /**
@@ -68,7 +69,7 @@ public class TurmaService {
      */
     public ResponseEntity<String> atualizarTurma(@Valid Long id, TurmaRequestDTO dto) {
         Turma turma = repository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Turma não encontrada!"));
+                .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada!"));
 
         VerificarDados.DadosVerificarTurma dados = verificarDados.verificarExisteTurmaEdicao(dto, id);
 

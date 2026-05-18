@@ -22,7 +22,7 @@ public class DataSeeder {
             boolean existeAdmin = repository.existsByTipoUsuario(TipoUsuario.ADMIN);
 
             if (!existeAdmin) {
-                String senhaCriptografada = passwordEncoder.encode("admin123");
+                String senhaCriptografada = passwordEncoder.encode("admin");
                 Professor admin = new Professor("admin", senhaCriptografada, TipoUsuario.ADMIN);
                 repository.save(admin);
                 System.out.println("Usuário admin criado — troque a senha após o primeiro login!");

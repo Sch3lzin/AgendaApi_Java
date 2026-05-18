@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -49,7 +50,9 @@ class ProfessorControllerTest {
         // arrange
         String json = """
                 {
-                    "name": "teste"
+                    "name": "teste",
+                    "senha": "teste",
+                    "permissao": "USUARIO"
                 }
                 """;
 
@@ -100,5 +103,169 @@ class ProfessorControllerTest {
 
         // assert
         Assertions.assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIO")
+    void DeveraRetornarStatus404ParaDeletarProfessorNaoEncontrado() throws Exception{
+
+        // arrange
+        Long id = 999L;
+
+        when(professorService.deletarProfessor(any()))
+                .thenReturn(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado"));
+
+        // act
+        var response = mvc.perform(
+                delete("/professor/" + id)).andReturn().getResponse();
+
+        //assert
+        Assertions.assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIO")
+    void DeveraRetornarStatus200ParaAtualizarProfessor() throws Exception {
+
+        // arrenge
+        Long id = 1L;
+        String json = """
+                {
+                    "name": "teste",
+                    "senha": "teste",
+                    "permissao": "USUARIO"
+                }
+                """;
+
+        when(professorService.atualizarProfessor(any(), any()))
+                .thenReturn(ResponseEntity.ok("Professor atualizado com sucesso!"));
+
+        // act
+        var response = mvc.perform(
+                put("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIO")
+    void DeveraRetornarStatus400ParaAtualizarProfessor() throws Exception {
+
+        // arrenge
+        Long id = 1L;
+        String json = "{}";
+
+        // act
+        var response = mvc.perform(
+                put("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIO")
+    void DeveraRetornarStatus404ParaAtualizarProfessorNaoEncontrado() throws Exception {
+
+        // arrenge
+        Long id = 999L;
+        String json = """
+                {
+                    "name": "teste",
+                    "senha": "teste",
+                    "permissao": "USUARIO"
+                }
+                """;
+
+        when(professorService.atualizarProfessor(any(), any()))
+                .thenReturn(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado"));
+
+        // act
+        var response = mvc.perform(
+                put("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "USUARIO")
+    void DeveraRetornarStatus200ParaAtualizarNomeProfessor() throws Exception {
+
+        // arrange
+        Long id = 1L;
+        String json = """
+                {
+                    "name": "teste"
+                }
+                """;
+
+        when(professorService.atualizarNomeProfessor(any(), any()))
+                .thenReturn(ResponseEntity.ok("Professor atualizado com sucesso!"));
+
+        // act
+        var response = mvc.perform(
+                patch("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "USUARIO")
+    void DeveraRetornarStatus400ParaAtualizarNomeProfessor() throws Exception {
+
+        // arrange
+        Long id = 1L;
+        String json = "{}";
+
+        // act
+        var response = mvc.perform(
+                patch("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = "USUARIO")
+    void DeveraRetornarStatus404ParaAtualizarNomeProfessorNaoEncontrado() throws Exception {
+
+        // arrange
+        Long id = 999L;
+        String json = """
+                {
+                    "name": "teste"
+                }
+                """;
+
+        when(professorService.atualizarNomeProfessor(any(), any()))
+                .thenReturn(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado"));
+
+        // act
+        var response = mvc.perform(
+                patch("/professor/" + id)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        // assert
+        Assertions.assertEquals(404, response.getStatus());
     }
 }

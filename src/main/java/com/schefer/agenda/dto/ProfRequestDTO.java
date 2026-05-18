@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotNull;
 public record ProfRequestDTO(
         @NotBlank String name,  // @NotBlank rejeita tanto null quanto strings em branco
         @NotBlank String senha,
-        @NotNull TipoUsuario permisao
+        @NotNull TipoUsuario permissao
         ) {}

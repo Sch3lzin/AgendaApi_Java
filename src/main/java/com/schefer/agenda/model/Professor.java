@@ -42,6 +42,12 @@ public class Professor implements UserDetails {
         this.name = name;
     }
 
+    public void atualizarDados(String name, String senha, TipoUsuario permissao) {
+        this.name = name;
+        this.senha = senha;
+        this.tipoUsuario = permissao;
+    }
+
     // --- UserDetails ---
 
     @Override
